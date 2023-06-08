@@ -1,0 +1,61 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+all_news
+{% endblock title %}
+
+{% block content %}
+<h1>Все новости и статьи</h1>
+<h3>{{ all_news|length }}</h3>
+
+ <hr>
+   {% if all_news %}
+       <table>
+           <tr>
+               <td>Заголовок</td>
+               <td>Дата публикации</td>
+               <td>Автор</td>
+               <td>Категория</td>
+               <td>Содержание</td>
+           </tr>
+
+           {% for news in all_news %}
+           <tr>
+               <td>{{ news.title|censor }}</td>
+               <td>{{ news.addTime|date:'d M Y'}}</td>
+               <td>{{ news.author }}</td>
+                <td>{% for cat in news.postCategory.all %}
+                    {{ cat.categoryName }}
+                     {% endfor %}
+                </td>
+               <td>{{ news.content|truncatechars:20|censor }}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>Статей и новостей нет!</h2>
+   {% endif %}
+
+   {% if page_obj.has_previous %}
+
+       <a href="?{% url_replace page=1 %}" >1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {{ page_obj.number }}
+
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}
